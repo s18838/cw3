@@ -16,9 +16,9 @@ namespace cw3.Controllers
     public class StudentController : ControllerBase
     {
 
-        private readonly IDbService _dbService;
+        private readonly IDBService _dbService;
 
-        public StudentController(IDbService dbService)
+        public StudentController(IDBService dbService)
         {
             _dbService = dbService;
         }
@@ -26,62 +26,19 @@ namespace cw3.Controllers
         [HttpGet]
         public IActionResult GetStudents()
         {
-
-            List<Student> list = new List<Student>();
-
-            using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=2019SBD;Integrated Security=True"))
-                using(var com = new SqlCommand())
-            {
-                com.Connection = con;
-                com.CommandText = "SELECT * FROM Student";
-
-                con.Open();
-
-                var dr = com.ExecuteReader();
-
-               
-
-                while (dr.Read()) {
-                    var student = new Student
-                    {
-                        FirstName = dr["FirstName"].ToString(),
-                        LastName = dr["LastName"].ToString()
-                    };
-
-                    list.Add(student);
-                }
-            }
-
-            return Ok(list);
+            return Ok(_dbService.GetStudents());
         }
 
         [HttpGet("{id}/enrollments")]
-        public IActionResult GetEnrollments(int id)
+        public IActionResult GetEnrollments(string id)
         {
+            var res = _dbService.GetEnrollments(id);
 
-            List<Student> list = new List<Student>(); // change to Enrollment
+            if (res != null)
+                return Ok(res);
 
-            using (var con = new SqlConnection("Data Source=db-mssql;Initial Catalog=2019SBD;Integrated Security=True"))
-            using (var com = new SqlCommand())
-            {
-                com.Connection = con;
-                com.CommandText = "SELECT FROM Enrollment WHERE IdEnrollment IN (Select IdEnrollment from Student where IndexNumber = @id)";
-                com.Parameters.AddWithValue("id", id);
-
-                con.Open();
-
-                var dr = com.ExecuteReader();
-
-                while (dr.Read())
-                {
-                    // Parse to Enrollment
-                }
-            }
-
-            return Ok(list);
+            return NotFound();
         }
-
-
 
         [HttpPost]
         public IActionResult CreateStudent(Student student)
