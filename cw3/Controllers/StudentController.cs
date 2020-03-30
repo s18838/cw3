@@ -16,23 +16,23 @@ namespace cw3.Controllers
     public class StudentController : ControllerBase
     {
 
-        private readonly IDBService _dbService;
+        private readonly IStudentDbService _studentDbService;
 
-        public StudentController(IDBService dbService)
+        public StudentController(IStudentDbService studentDbService)
         {
-            _dbService = dbService;
+            _studentDbService = studentDbService;
         }
 
         [HttpGet]
         public IActionResult GetStudents()
         {
-            return Ok(_dbService.GetStudents());
+            return Ok(_studentDbService.GetStudents());
         }
 
         [HttpGet("{id}/enrollments")]
         public IActionResult GetEnrollments(string id)
         {
-            var res = _dbService.GetEnrollments(id);
+            var res = _studentDbService.GetEnrollments(id);
 
             if (res != null)
                 return Ok(res);

@@ -24,7 +24,7 @@ namespace cw3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IDBService, DBService>();
+            services.AddSingleton<IStudentDbService, StudentDbService>();
             services.AddControllersWithViews();
         }
 
