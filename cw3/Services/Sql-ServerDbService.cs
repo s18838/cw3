@@ -107,7 +107,7 @@ namespace cw3.DAL
                 saveEnrollment(con, enrollment, transaction);
             }
                 
-            if (checkIfExists(con, request.IndexNumber))
+            if (checkIfExists(con, request.IndexNumber, transaction))
             {
                 transaction.Rollback();
                 throw new Exception();
@@ -248,11 +248,12 @@ namespace cw3.DAL
             com.ExecuteNonQuery();
         }
 
-        private bool checkIfExists(SqlConnection con, string indexNumber)
+        private bool checkIfExists(SqlConnection con, string indexNumber, SqlTransaction transaction)
         {
             using var com = new SqlCommand()
             {
-                Connection = con
+                Connection = con,
+                Transaction = transaction
             };
             com.CommandText = $"SELECT * FROM Student WHERE IndexNumber=@indexNumber";
             com.Parameters.AddWithValue("indexNumber", indexNumber);
