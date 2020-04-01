@@ -104,7 +104,7 @@ namespace cw3.DAL
                     IdStudy = study.IdStudy,
                     StartDate = DateTime.Now.ToString("MM.dd.yyyy")
                 };
-                saveEnrollment(con, enrollment);
+                saveEnrollment(con, enrollment, transaction);
             }
                 
             if (checkIfExists(con, request.IndexNumber))
@@ -122,7 +122,7 @@ namespace cw3.DAL
                 IdEnrollment = IntegerType.FromObject(enrollment.IdEnrollment)
             };
                 
-            saveStudent(con, student);
+            saveStudent(con, student, transaction);
             transaction.Commit();
 
             return enrollment;
@@ -139,7 +139,7 @@ namespace cw3.DAL
             {
                 throw new Exception();
             }
-            
+
             using var com = new SqlCommand()
             {
                 Connection = con
@@ -231,10 +231,11 @@ namespace cw3.DAL
             return null;
         }
         
-        private void saveStudent(SqlConnection con, Student student)
+        private void saveStudent(SqlConnection con, Student student, SqlTransaction transaction)
         {
             using var com = new SqlCommand()
             {
+                Transaction = transaction,
                 Connection = con
             };
             com.CommandText =
@@ -264,10 +265,11 @@ namespace cw3.DAL
             return false;
         }
         
-        private void saveEnrollment(SqlConnection con, Enrollment enrollment)
+        private void saveEnrollment(SqlConnection con, Enrollment enrollment, SqlTransaction transaction)
         {
             using var com = new SqlCommand()
             {
+                Transaction = transaction,
                 Connection = con,
                 CommandText = $"INSERT INTO Enrollment SELECT NULLIF(MAX(E.IdEnrollment) + 1, 0), @Semester, @IdStudy, @StartDate"
             };
