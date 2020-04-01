@@ -82,22 +82,17 @@ namespace cw3.DAL
             }
 
             using var con = new SqlConnection(ConStr);
-            using var com = new SqlCommand()
-            {
-                Connection = con,
-                CommandText = $"INSERT INTO Enrollment SELECT NULLIF(MAX(E.IdEnrollment) + 1, 0), @Semester, @IdStudy, @StartDate"
-            };
             con.Open();
 
                 
-            var study = getStudy(com, request.Studies);
+            var study = getStudy(con, request.Studies);
                 
             if (study == null)
             {
                 throw new Exception();
             }
                 
-            var enrollment = getLastEnrollmentForStudy(com, study.IdStudy);
+            var enrollment = getLastEnrollmentForStudy(con, study.IdStudy);
                 
             var transaction = con.BeginTransaction();
                 
@@ -109,10 +104,10 @@ namespace cw3.DAL
                     IdStudy = study.IdStudy,
                     StartDate = DateTime.Now.ToString("MM.dd.yyyy")
                 };
-                saveEnrollment(com, enrollment);
+                saveEnrollment(con, enrollment);
             }
                 
-            if (checkIfExists(com, request.IndexNumber))
+            if (checkIfExists(con, request.IndexNumber))
             {
                 transaction.Rollback();
                 throw new Exception();
@@ -127,7 +122,7 @@ namespace cw3.DAL
                 IdEnrollment = IntegerType.FromObject(enrollment.IdEnrollment)
             };
                 
-            saveStudent(com, student);
+            saveStudent(con, student);
             transaction.Commit();
 
             return enrollment;
@@ -136,18 +131,19 @@ namespace cw3.DAL
         public Enrollment PromoteStudents(PromoteStudentsRequest request)
         {
             using var con = new SqlConnection(ConStr);
-            using var com = new SqlCommand()
-            {
-                Connection = con
-            };
             con.Open();
 
-            var enrollment = getEnrollment(com, request.Studies, request.Semester);
+            var enrollment = getEnrollment(con, request.Studies, request.Semester);
 
             if (enrollment == null)
             {
                 throw new Exception();
             }
+            
+            using var com = new SqlCommand()
+            {
+                Connection = con
+            };
 
             com.CommandText = $"PromoteStudents";
             com.CommandType = CommandType.StoredProcedure;
@@ -162,8 +158,12 @@ namespace cw3.DAL
             return enrollment;
         }
 
-        private Study getStudy(SqlCommand com, string name)
+        private Study getStudy(SqlConnection con, string name)
         {
+            using var com = new SqlCommand()
+            {
+                Connection = con
+            };
             com.CommandText = $"SELECT * FROM Studies WHERE Name = @name";
             com.Parameters.AddWithValue("name", name);
             var rd = com.ExecuteReader();
@@ -178,8 +178,12 @@ namespace cw3.DAL
             return null;
         }
         
-        private Enrollment getEnrollment(SqlCommand com, string name, int semester)
+        private Enrollment getEnrollment(SqlConnection con, string name, int semester)
         {
+            using var com = new SqlCommand()
+            {
+                Connection = con
+            };
             com.CommandText = $"SELECT * FROM Enrollment JOIN Studies ON Enrollment.IdStudy = Studies.IdStudy WHERE Semester = @semester AND Name = @name)";
             com.Parameters.AddWithValue("name", name);
             com.Parameters.AddWithValue("semester", semester);
@@ -198,8 +202,12 @@ namespace cw3.DAL
             return null;
         }
         
-        private Enrollment getLastEnrollmentForStudy(SqlCommand com, int id)
+        private Enrollment getLastEnrollmentForStudy(SqlConnection con, int id)
         {
+            using var com = new SqlCommand()
+            {
+                Connection = con
+            };
             com.CommandText = $"SELECT * FROM Enrollment WHERE IdStudy = @id AND Semester = 1";
             com.Parameters.AddWithValue("id", id);
             
@@ -217,8 +225,12 @@ namespace cw3.DAL
             return null;
         }
         
-        private void saveStudent(SqlCommand com, Student student)
+        private void saveStudent(SqlConnection con, Student student)
         {
+            using var com = new SqlCommand()
+            {
+                Connection = con
+            };
             com.CommandText =
                 $"INSERT INTO Student VALUES (@IndexNumber, @FirstName, @LastName, @BirthDate, @IdEnrollment)";
             com.Parameters.AddWithValue("IndexNumber", student.IndexNumber);
@@ -229,8 +241,12 @@ namespace cw3.DAL
             com.ExecuteNonQuery();
         }
 
-        private bool checkIfExists(SqlCommand com, string indexNumber)
+        private bool checkIfExists(SqlConnection con, string indexNumber)
         {
+            using var com = new SqlCommand()
+            {
+                Connection = con
+            };
             com.CommandText = $"SELECT * FROM Student WHERE IndexNumber=@indexNumber";
             com.Parameters.AddWithValue("indexNumber", indexNumber);
             var rd = com.ExecuteReader();
@@ -241,10 +257,13 @@ namespace cw3.DAL
             return false;
         }
         
-        private void saveEnrollment(SqlCommand com, Enrollment enrollment)
+        private void saveEnrollment(SqlConnection con, Enrollment enrollment)
         {
-            com.CommandText =
-                $"INSERT INTO Enrollment(Semester, IdStudy, StartDate) VALUES (@Semester, @IdStudy, @StartDate)";
+            using var com = new SqlCommand()
+            {
+                Connection = con,
+                CommandText = $"INSERT INTO Enrollment SELECT NULLIF(MAX(E.IdEnrollment) + 1, 0), @Semester, @IdStudy, @StartDate"
+            };
             com.Parameters.AddWithValue("Semester", enrollment.Semester);
             com.Parameters.AddWithValue("IdStudy", enrollment.IdStudy);
             com.Parameters.AddWithValue("StartDate", enrollment.StartDate);
