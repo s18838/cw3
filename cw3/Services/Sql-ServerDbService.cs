@@ -32,7 +32,7 @@ namespace cw3.DAL
                         IndexNumber = rd["IndexNumber"].ToString(),
                         FirstName = rd["FirstName"].ToString(),
                         LastName = rd["LastName"].ToString(),
-                        BirthDate = rd["BirthDate"].ToString(),
+                        BirthDate = DateTime.Parse(rd["BirthDate"].ToString()),
                         IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"])
                     });
                 }
@@ -263,6 +263,7 @@ namespace cw3.DAL
                 rd.Close();
                 return true;
             }
+            rd.Close();
             return false;
         }
         
