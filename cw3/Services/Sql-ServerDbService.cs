@@ -186,7 +186,7 @@ namespace cw3.DAL
             {
                 Connection = con
             };
-            com.CommandText = $"SELECT * FROM Enrollment JOIN Studies ON Enrollment.IdStudy = Studies.IdStudy WHERE Semester = @semester AND Name = @name)";
+            com.CommandText = $"SELECT * FROM Enrollment JOIN Studies ON Enrollment.IdStudy = Studies.IdStudy WHERE Semester = @semester AND Name = @name";
             com.Parameters.AddWithValue("name", name);
             com.Parameters.AddWithValue("semester", semester);
             var rd = com.ExecuteReader();
