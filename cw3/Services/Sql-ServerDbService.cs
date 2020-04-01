@@ -169,11 +169,13 @@ namespace cw3.DAL
             var rd = com.ExecuteReader();
             while (rd.Read())
             {
-                return new Study()
+                var study = new Study()
                 {
                     IdStudy = IntegerType.FromObject(rd["IdStudy"]),
                     Name = rd["Name"].ToString()
                 };
+                rd.Close();
+                return study;
             }
             return null;
         }
@@ -190,13 +192,15 @@ namespace cw3.DAL
             var rd = com.ExecuteReader();
             while (rd.Read())
             {
-                return new Enrollment()
+                var enrollment = new Enrollment()
                 {
                     IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"]),
                     Semester = IntegerType.FromObject(rd["Semester"]),
                     IdStudy = IntegerType.FromObject(rd["IdStudy"]),
                     StartDate = rd["StartDate"].ToString()
                 };
+                rd.Close();
+                return enrollment;
             }
 
             return null;
@@ -214,13 +218,15 @@ namespace cw3.DAL
             var rd = com.ExecuteReader();
             while (rd.Read())
             {
-                return new Enrollment()
+                var enrollment = new Enrollment()
                 {
                     IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"]),
                     Semester = IntegerType.FromObject(rd["Semester"]),
                     IdStudy = IntegerType.FromObject(rd["IdStudy"]),
                     StartDate = rd["StartDate"].ToString()
                 };
+                rd.Close();
+                return enrollment;
             }
             return null;
         }
@@ -252,6 +258,7 @@ namespace cw3.DAL
             var rd = com.ExecuteReader();
             while (rd.Read())
             {
+                rd.Close();
                 return true;
             }
             return false;
