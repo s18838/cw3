@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace cw3.DTOs
@@ -13,7 +12,7 @@ namespace cw3.DTOs
         // [Required]
         public string LastName { get; set; }
         // [Required]
-        public DateTime BirthDate { get; set; }
+        public string BirthDate { get; set; }
         // [Required]
         public string Studies { get; set; }
     }
