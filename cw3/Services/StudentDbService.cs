@@ -16,7 +16,7 @@ namespace cw3.DAL
         public IEnumerable<Student> GetStudents()
         {
             var students = new List<Student>();
-            using(var con = new SqlConnection())
+            using(var con = new SqlConnection(ConStr))
             {
                 using var com = new SqlCommand()
                 {
@@ -44,7 +44,7 @@ namespace cw3.DAL
         public IEnumerable<Enrollment> GetEnrollments(string id)
         {
             var enrollments = new List<Enrollment>();
-            using(var con = new SqlConnection())
+            using(var con = new SqlConnection(ConStr))
             {
                 using var com = new SqlCommand()
                 {
@@ -274,7 +274,7 @@ namespace cw3.DAL
         
         public bool checkIfExists(string indexNumber)
         {
-            using (var con = new SqlConnection())
+            using (var con = new SqlConnection(ConStr))
             {
                 using (var com = new SqlCommand())
                 {

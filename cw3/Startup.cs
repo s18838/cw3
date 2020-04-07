@@ -53,7 +53,7 @@ namespace cw3
             {
                 var headers = context.Request.Headers;
 
-                if (!headers.Keys.Contains("Index"))
+                if (!headers.ContainsKey("Index"))
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     await context.Response.WriteAsync("Index required in headers");

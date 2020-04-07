@@ -16,7 +16,7 @@ namespace cw3.Middlewares
         }
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            // httpContext.Request.EnableBuffering();
+            httpContext.Request.EnableBuffering();
             var request = httpContext.Request;
             append.WriteLine("=====================================================");
             append.WriteLine(request.Method);
@@ -27,6 +27,7 @@ namespace cw3.Middlewares
                 {
                     append.WriteLine(await readStream.ReadToEndAsync());
                 }
+                httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
             }
             foreach (var keyValuePair in request.Query)
             {
@@ -34,8 +35,7 @@ namespace cw3.Middlewares
             }
             append.WriteLine("=====================================================");
             append.Flush();
-
-            httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+            
             await _next(httpContext); }
     }
 }
