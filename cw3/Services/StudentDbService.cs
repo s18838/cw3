@@ -81,50 +81,55 @@ namespace cw3.DAL
                 throw new Exception();
             }
 
-            using var con = new SqlConnection(ConStr);
-            con.Open();
+            Enrollment enrollment;
 
-                
-            var study = getStudy(con, request.Studies);
-                
-            if (study == null)
+            using (var con = new SqlConnection(ConStr))
             {
-                throw new Exception();
-            }
-                
-            var enrollment = getLastEnrollmentForStudy(con, study.IdStudy);
-                
-            var transaction = con.BeginTransaction();
-                
-            if (enrollment == null)
-            {
-                enrollment = new Enrollment()
+                con.Open();
+
+
+                var study = getStudy(con, request.Studies);
+
+                if (study == null)
                 {
-                    Semester = 1,
-                    IdStudy = study.IdStudy,
-                    StartDate = DateTime.Now.ToString("MM.dd.yyyy")
-                };
-                saveEnrollment(con, enrollment, transaction);
-            }
-                
-            if (checkIfExists(con, request.IndexNumber, transaction))
-            {
-                transaction.Rollback();
-                throw new Exception();
-            }
-                
-            var student = new Student()
-            {
-                IndexNumber = request.IndexNumber,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                BirthDate = request.BirthDate,
-                IdEnrollment = IntegerType.FromObject(enrollment.IdEnrollment)
-            };
-                
-            saveStudent(con, student, transaction);
-            transaction.Commit();
+                    throw new Exception();
+                }
 
+                enrollment = getLastEnrollmentForStudy(con, study.IdStudy);
+
+                var transaction = con.BeginTransaction();
+
+                if (enrollment == null)
+                {
+                    enrollment = new Enrollment()
+                    {
+                        Semester = 1,
+                        IdStudy = study.IdStudy,
+                        StartDate = DateTime.Now.ToString("MM.dd.yyyy")
+                    };
+                    saveEnrollment(con, enrollment, transaction);
+                }
+
+                if (checkIfExists(con, request.IndexNumber, transaction))
+                {
+                    transaction.Rollback();
+                    throw new Exception();
+                }
+
+                var student = new Student()
+                {
+                    IndexNumber = request.IndexNumber,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    BirthDate = request.BirthDate,
+                    IdEnrollment = IntegerType.FromObject(enrollment.IdEnrollment)
+                };
+
+                saveStudent(con, student, transaction);
+                transaction.Commit();
+                
+            }
+            
             return enrollment;
         }
 
@@ -264,6 +269,28 @@ namespace cw3.DAL
                 return true;
             }
             rd.Close();
+            return false;
+        }
+        
+        public bool checkIfExists(string indexNumber)
+        {
+            using (var con = new SqlConnection())
+            {
+                using (var com = new SqlCommand())
+                {
+                    con.Open();
+                    com.Connection = con;
+                    com.CommandText = $"SELECT * FROM Student WHERE IndexNumber=@indexNumber";
+                    com.Parameters.AddWithValue("indexNumber", indexNumber);
+                    var rd = com.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        rd.Close();
+                        return true;
+                    }
+                    rd.Close();
+                }
+            }
             return false;
         }
         
