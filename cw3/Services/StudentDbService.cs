@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 using cw3.DTOs;
 using cw3.Models;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -306,6 +308,113 @@ namespace cw3.DAL
             com.Parameters.AddWithValue("IdStudy", enrollment.IdStudy);
             com.Parameters.AddWithValue("StartDate", enrollment.StartDate);
             com.ExecuteNonQuery();
+        }
+
+        public bool LogIn(LoginCredentials loginCredentials)
+        {
+            var salt = GetSalt(loginCredentials.Login);
+            var valueBytes = KeyDerivation.Pbkdf2(
+                                                loginCredentials.Password, 
+                                                Encoding.UTF8.GetBytes(salt),
+                                                KeyDerivationPrf.HMACSHA512,
+                                                1000,
+                                                256 / 8);
+
+            var password = Convert.ToBase64String(valueBytes);
+            using (var con = new SqlConnection(ConStr))
+            {
+                using (var com = new SqlCommand())
+                {
+                    con.Open();
+                    com.Connection = con;
+                    com.CommandText = $"SELECT * FROM Student WHERE Password=@password AND IndexNumber=@indexNumber";
+                    com.Parameters.AddWithValue("password", password);
+                    com.Parameters.AddWithValue("indexNumber", loginCredentials.Login);
+                    var rd = com.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        rd.Close();
+                        return true;
+                    }
+                    rd.Close();
+                }
+            }
+            return false;
+        }
+
+        public string GetSalt(string indexNumber)
+        {
+            using (var con = new SqlConnection(ConStr))
+            {
+                using (var com = new SqlCommand())
+                {
+                    con.Open();
+                    com.Connection = con;
+                    com.CommandText = $"SELECT Salt FROM Student WHERE IndexNumber=@indexNumber";
+                    com.Parameters.AddWithValue("indexNumber", indexNumber);
+                    var rd = com.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        rd.Close();
+                        return rd.ToString();
+                    }
+                    rd.Close();
+                }
+            }
+            return null;
+        }
+
+        public void SaveRefreshToken(string refreshToken, string indexNumber)
+        {
+            using (var con = new SqlConnection(ConStr))
+            {
+                using (var com = new SqlCommand())
+                {
+                    con.Open();
+                    com.Connection = con;
+                    com.CommandText = $"INSERT INTO Token Values(@refreshToken, @indexNumber)";
+                    com.Parameters.AddWithValue("refreshToken", refreshToken);
+                    com.Parameters.AddWithValue("indexNumber", indexNumber);
+                    com.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public string CheckRefreshToken(RefreshTokenDTO refreshTokenDto)
+        {
+            using (var con = new SqlConnection(ConStr))
+            {
+                using (var com = new SqlCommand())
+                {
+                    con.Open();
+                    com.Connection = con;
+                    com.CommandText = $"SELECT IndexNumber FROM Token WHERE RefreshToken=@refreshToken";
+                    com.Parameters.AddWithValue("refreshToken", refreshTokenDto.RefreshToken);
+                    var rd = com.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        rd.Close();
+                        return rd.ToString();
+                    }
+                    rd.Close();
+                }
+            }
+            return null;
+        }
+
+        public void DeleteRefreshToken(RefreshTokenDTO refreshTokenDto)
+        {
+            using (var con = new SqlConnection(ConStr))
+            {
+                using (var com = new SqlCommand())
+                {
+                    con.Open();
+                    com.Connection = con;
+                    com.CommandText = $"DELETE FROM Token WHERE RefreshToken=@refreshToken";
+                    com.Parameters.AddWithValue("refreshToken", refreshTokenDto.RefreshToken);
+                    com.ExecuteNonQuery();
+                }
+            }
         }
     }
 }

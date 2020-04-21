@@ -2,6 +2,7 @@ using System;
 using cw3.DAL;
 using cw3.DTOs;
 using cw3.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
 
@@ -21,6 +22,7 @@ namespace cw3.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = "employee")]
         public IActionResult EnrollStudent(EnrollStudentRequest request)
         {
             try
@@ -34,6 +36,7 @@ namespace cw3.Controllers
         }
         
         [HttpPost("promotions")]
+        [Authorize(Roles = "employee")]
         public IActionResult PromoteStudents(PromoteStudentsRequest request)
         {
             try

@@ -13,5 +13,10 @@ namespace cw3.DAL
         public IEnumerable<Enrollment> GetEnrollments(string id);
         public Enrollment EnrollStudent(EnrollStudentRequest request);
         public Enrollment PromoteStudents(PromoteStudentsRequest request);
+        public bool LogIn(LoginCredentials loginCredentials);
+        public string GetSalt(string indexNumber);
+        public void SaveRefreshToken(String refreshToken, string indexNumber);
+        public string CheckRefreshToken(RefreshTokenDTO refreshTokenDto);
+        public void DeleteRefreshToken(RefreshTokenDTO refreshTokenDto);
     }
 }
