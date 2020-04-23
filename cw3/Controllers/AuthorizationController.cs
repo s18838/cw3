@@ -54,11 +54,11 @@ namespace cw3.Controllers
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                    refreshToken
+                    refreshToken = refreshToken
                 });
             }
 
-            return Forbid();
+            return Unauthorized();
         }
         
         [HttpPost("refreshToken")]
@@ -96,7 +96,7 @@ namespace cw3.Controllers
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                    refreshToken
+                    refreshToken = refreshToken
                 });
             }
 

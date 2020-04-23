@@ -355,8 +355,9 @@ namespace cw3.DAL
                     var rd = com.ExecuteReader();
                     while (rd.Read())
                     {
+                        var salt = rd["Salt"].ToString();
                         rd.Close();
-                        return rd.ToString();
+                        return salt;
                     }
                     rd.Close();
                 }
@@ -393,8 +394,9 @@ namespace cw3.DAL
                     var rd = com.ExecuteReader();
                     while (rd.Read())
                     {
+                        var indexNumber = rd["IndexNumber"].ToString();
                         rd.Close();
-                        return rd.ToString();
+                        return indexNumber;
                     }
                     rd.Close();
                 }
