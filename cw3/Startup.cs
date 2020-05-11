@@ -69,28 +69,30 @@ namespace cw3
             }
             
             app.UseMiddleware<LoggingMiddleware>();
-            
-            app.Use(async (context, next) =>
+
+            app.UseWhen(context => context.Request.Path.ToString().Contains("secret"), app =>
             {
-                var headers = context.Request.Headers;
-
-                if (!headers.ContainsKey("Index"))
+                app.Use(async (context, next) =>
                 {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    await context.Response.WriteAsync("Index required in headers");
-                    return;
-                }
+                    var headers = context.Request.Headers;
 
-                if (!studentDbService.checkIfExists(context.Request.Headers["Index"].ToString()))
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    await context.Response.WriteAsync("Student not found");
-                    return;
-                }
-                
-                await next();
+                    if (!headers.ContainsKey("Index"))
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await context.Response.WriteAsync("Index required in headers");
+                        return;
+                    }
+
+                    if (!studentDbService.checkIfExists(context.Request.Headers["Index"].ToString()))
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await context.Response.WriteAsync("Student not found");
+                        return;
+                    }
+
+                    await next();
+                });
             });
-
             //app.UseHttpsRedirection();
 
             app.UseStaticFiles();
