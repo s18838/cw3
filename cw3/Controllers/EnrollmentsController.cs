@@ -31,7 +31,7 @@ namespace cw3.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e);
             }
         }
         
@@ -45,7 +45,7 @@ namespace cw3.Controllers
             }
             catch (Exception e)
             {
-                return NotFound();
+                return NotFound(e);
             }
         }
     }

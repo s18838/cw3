@@ -1,18 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using cw3.DAL;
 using cw3.Middlewares;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,7 +35,8 @@ namespace cw3
                         ValidateLifetime=true,
                         ValidIssuer="Gakko",
                         ValidAudience="Students",
-                        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]))
+                        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yhf873g7nsmfgh3847gfxm3h98fh39"))
+                        //Configuration["SecretKey"]
                     };
                 });
 

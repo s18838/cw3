@@ -6,7 +6,6 @@ using System.Text;
 using cw3.DTOs;
 using cw3.Models;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace cw3.DAL
@@ -15,6 +14,7 @@ namespace cw3.DAL
     {
         
         private const string ConStr = "Data Source=db-mssql;Initial Catalog=2019SBD;Integrated Security=True";
+
         public IEnumerable<Student> GetStudents()
         {
             var students = new List<Student>();

@@ -21,14 +21,11 @@ namespace cw3.Middlewares
             append.WriteLine("=====================================================");
             append.WriteLine(request.Method);
             append.WriteLine(request.Path);
-            using (Stream receiveStream = request.Body)
+            using (StreamReader readStream = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true))
             {
-                using (StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8, true, 1024, true))
-                {
-                    append.WriteLine(await readStream.ReadToEndAsync());
-                }
-                httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+                append.WriteLine(await readStream.ReadToEndAsync());
             }
+            httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
             foreach (var keyValuePair in request.Query)
             {
                 append.WriteLine(keyValuePair);
