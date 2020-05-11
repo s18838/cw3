@@ -93,6 +93,7 @@ namespace cw3
                     await next();
                 });
             });
+
             //app.UseHttpsRedirection();
 
             app.UseStaticFiles();
