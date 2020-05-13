@@ -1,6 +1,7 @@
 using System.Text;
 using cw3.DAL;
 using cw3.Middlewares;
+//using cw3.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,7 +44,11 @@ namespace cw3
             
             services.AddSingleton<IStudentDbService, StudentDbService>();
             services.AddSingleton<StudentDbService, StudentDbService>();
-            services.AddControllersWithViews();
+            //services.AddSingleton<s18838Context, s18838Context>();
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,12 +80,12 @@ namespace cw3
                         return;
                     }
 
-                    //if (!studentDbService.checkIfExists(context.Request.Headers["Index"].ToString()))
-                    //{
-                    //    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    //    await context.Response.WriteAsync("Student not found");
-                    //    return;
-                    //}
+                    if (!studentDbService.CheckIfStudentExists(context.Request.Headers["Index"].ToString()))
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await context.Response.WriteAsync("Student not found");
+                        return;
+                    }
 
                     await next();
                 });

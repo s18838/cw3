@@ -27,7 +27,7 @@ namespace cw3.Controllers
         {
             try
             {
-                return Created("", _studentDbService.EnrollStudent(request));
+                //return Created("", _studentDbService.EnrollStudent(request));
             }
             catch (Exception e)
             {
@@ -41,7 +41,7 @@ namespace cw3.Controllers
         {
             try
             {
-                return Created("", _studentDbService.PromoteStudents(request));
+                //return Created("", _studentDbService.PromoteStudents(request));
             }
             catch (Exception e)
             {

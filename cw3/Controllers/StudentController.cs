@@ -25,10 +25,10 @@ namespace cw3.Controllers
             return Ok(_studentDbService.GetStudents());
         }
 
-        [HttpGet("{id}/enrollments")]
-        public IActionResult GetEnrollments(string id)
+        [HttpGet("{indexNumber}/enrollments")]
+        public IActionResult GetEnrollments(string indexNumber)
         {
-            var res = _studentDbService.GetEnrollments(id);
+            var res = _studentDbService.GetEnrollments(indexNumber);
 
             if (res != null)
                 return Ok(res);
@@ -36,25 +36,17 @@ namespace cw3.Controllers
             return NotFound();
         }
 
-        [HttpPost]
-        public IActionResult CreateStudent(Student student)
+        [HttpPut("{indexNumber}")]
+        public IActionResult ChangeStudent(string indexNumber, Student student)
         {
-            // creating in database
-            student.IndexNumber = $"s{new Random().Next(1, 20000)}";
-            return Ok(student);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult ChangeStudent(int id, Student student)
-        {
-            // changing in database
+            _studentDbService.modifyStudent(indexNumber, student);
             return Ok("Aktualizacja dokonana");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteStudent(int id)
+        public IActionResult DeleteStudent(string id)
         {
-            // deleting from database
+            _studentDbService.removeStudent(id);
             return Ok("Usuwanie ukończone");
         }
     }

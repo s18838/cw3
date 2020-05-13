@@ -61,6 +61,10 @@ namespace cw3.Models
                     .IsRequired()
                     .HasMaxLength(100);
 
+                entity.Property(e => e.Password).HasMaxLength(100);
+
+                entity.Property(e => e.Salt).HasMaxLength(100);
+
                 entity.HasOne(d => d.IdEnrollmentNavigation)
                     .WithMany(p => p.Student)
                     .HasForeignKey(d => d.IdEnrollment)
@@ -78,15 +82,15 @@ namespace cw3.Models
                     .HasMaxLength(100);
             });
 
-            modelBuilder.Entity<Token>(entity =>
+            modelBuilder.Entity<Token>((Action<Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Token>>)(entity =>
             {
-                entity.HasKey(e => new { e.RefreshToken, e.IndexNumber })
+                entity.HasKey((System.Linq.Expressions.Expression<Func<Token, object>>)(e => (new { e.RefreshToken, e.IndexNumber })))
                     .HasName("PK__Token__772F33F512E34002");
 
-                entity.Property(e => e.RefreshToken).HasMaxLength(100);
+                entity.Property((System.Linq.Expressions.Expression<Func<Token, string>>)(e => (string)e.RefreshToken)).HasMaxLength(100);
 
                 entity.Property(e => e.IndexNumber).HasMaxLength(100);
-            });
+            }));
 
             OnModelCreatingPartial(modelBuilder);
         }
