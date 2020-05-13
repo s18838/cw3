@@ -35,8 +35,7 @@ namespace cw3.Controllers
                     new Claim(ClaimTypes.Role, "employee")
                 };
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yhf873g7nsmfgh3847gfxm3h98fh39"));
-                //Configuration["SecretKey"]
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                 var token = new JwtSecurityToken
@@ -67,13 +66,13 @@ namespace cw3.Controllers
         {
 
             var login = _studentDbService.CheckRefreshToken(refreshTokenDto);
-            
+
             if (login != null)
             {
                 var claims = new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, "1"),
-                    new Claim(ClaimTypes.Name, login),
+                    //new Claim(ClaimTypes.Name, login),
                     new Claim(ClaimTypes.Role, "employee")
                 };
 

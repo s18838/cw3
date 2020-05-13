@@ -20,28 +20,28 @@ namespace cw3.Controllers
         {
             _studentDbService = studentDbService;
         }
-        
+
         [HttpPost]
         [Authorize(Roles = "employee")]
         public IActionResult EnrollStudent(EnrollStudentRequest request)
         {
             try
             {
-                return Created("",_studentDbService.EnrollStudent(request));
+                return Created("", _studentDbService.EnrollStudent(request));
             }
             catch (Exception e)
             {
                 return BadRequest(e);
             }
         }
-        
+
         [HttpPost("promotions")]
         [Authorize(Roles = "employee")]
         public IActionResult PromoteStudents(PromoteStudentsRequest request)
         {
             try
             {
-                return Created("",_studentDbService.PromoteStudents(request));
+                return Created("", _studentDbService.PromoteStudents(request));
             }
             catch (Exception e)
             {

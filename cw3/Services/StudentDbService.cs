@@ -13,12 +13,12 @@ namespace cw3.DAL
     public class StudentDbService : IStudentDbService
     {
         
-        private const string ConStr = "Data Source=db-mssql;Initial Catalog=2019SBD;Integrated Security=True";
+        private const string ConStr = "Data Source=db-mssql;Initial Catalog=s18838;Integrated Security=True";
 
         public IEnumerable<Student> GetStudents()
         {
             var students = new List<Student>();
-            using(var con = new SqlConnection(ConStr))
+            using (var con = new SqlConnection(ConStr))
             {
                 using var com = new SqlCommand()
                 {
@@ -34,7 +34,7 @@ namespace cw3.DAL
                         IndexNumber = rd["IndexNumber"].ToString(),
                         FirstName = rd["FirstName"].ToString(),
                         LastName = rd["LastName"].ToString(),
-                        BirthDate = rd["BirthDate"].ToString(),
+                        BirthDate = DateType.FromString(rd["BirthDate"].ToString()),
                         IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"])
                     });
                 }
@@ -46,7 +46,7 @@ namespace cw3.DAL
         public IEnumerable<Enrollment> GetEnrollments(string id)
         {
             var enrollments = new List<Enrollment>();
-            using(var con = new SqlConnection(ConStr))
+            using (var con = new SqlConnection(ConStr))
             {
                 using var com = new SqlCommand()
                 {
@@ -63,7 +63,7 @@ namespace cw3.DAL
                         IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"]),
                         Semester = IntegerType.FromObject(rd["Semester"]),
                         IdStudy = IntegerType.FromObject(rd["IdStudy"]),
-                        StartDate = rd["StartDate"].ToString()
+                        StartDate = DateType.FromString(rd["StartDate"].ToString())
                     });
                 }
             }
@@ -74,8 +74,8 @@ namespace cw3.DAL
         public Enrollment EnrollStudent(EnrollStudentRequest request)
         {
 
-            if (request.Studies == null 
-                || request.BirthDate == null 
+            if (request.Studies == null
+                || request.BirthDate == null
                 || request.FirstName == null
                 || request.IndexNumber == null
                 || request.LastName == null)
@@ -107,7 +107,7 @@ namespace cw3.DAL
                     {
                         Semester = 1,
                         IdStudy = study.IdStudy,
-                        StartDate = DateTime.Now.ToString("MM.dd.yyyy")
+                        StartDate = DateType.FromString(DateTime.Now.ToString("MM.dd.yyyy"))
                     };
                     saveEnrollment(con, enrollment, transaction);
                 }
@@ -123,15 +123,15 @@ namespace cw3.DAL
                     IndexNumber = request.IndexNumber,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
-                    BirthDate = request.BirthDate,
+                    BirthDate = DateType.FromString(request.BirthDate),
                     IdEnrollment = IntegerType.FromObject(enrollment.IdEnrollment)
                 };
 
                 saveStudent(con, student, transaction);
                 transaction.Commit();
-                
+
             }
-            
+
             return enrollment;
         }
 
@@ -161,11 +161,11 @@ namespace cw3.DAL
             com.ExecuteNonQuery();
 
             enrollment.Semester++;
-            
+
             return enrollment;
         }
 
-        private Study getStudy(SqlConnection con, string name)
+        private Studies getStudy(SqlConnection con, string name)
         {
             using var com = new SqlCommand()
             {
@@ -176,7 +176,7 @@ namespace cw3.DAL
             var rd = com.ExecuteReader();
             while (rd.Read())
             {
-                var study = new Study()
+                var study = new Studies()
                 {
                     IdStudy = IntegerType.FromObject(rd["IdStudy"]),
                     Name = rd["Name"].ToString()
@@ -186,7 +186,7 @@ namespace cw3.DAL
             }
             return null;
         }
-        
+
         private Enrollment getEnrollment(SqlConnection con, string name, int semester)
         {
             using var com = new SqlCommand()
@@ -204,7 +204,7 @@ namespace cw3.DAL
                     IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"]),
                     Semester = IntegerType.FromObject(rd["Semester"]),
                     IdStudy = IntegerType.FromObject(rd["IdStudy"]),
-                    StartDate = rd["StartDate"].ToString()
+                    StartDate = DateType.FromString(rd["StartDate"].ToString())
                 };
                 rd.Close();
                 return enrollment;
@@ -212,7 +212,7 @@ namespace cw3.DAL
 
             return null;
         }
-        
+
         private Enrollment getLastEnrollmentForStudy(SqlConnection con, int id)
         {
             using var com = new SqlCommand()
@@ -221,7 +221,7 @@ namespace cw3.DAL
             };
             com.CommandText = $"SELECT * FROM Enrollment WHERE IdStudy = @id AND Semester = 1";
             com.Parameters.AddWithValue("id", id);
-            
+
             var rd = com.ExecuteReader();
             while (rd.Read())
             {
@@ -230,14 +230,14 @@ namespace cw3.DAL
                     IdEnrollment = IntegerType.FromObject(rd["IdEnrollment"]),
                     Semester = IntegerType.FromObject(rd["Semester"]),
                     IdStudy = IntegerType.FromObject(rd["IdStudy"]),
-                    StartDate = rd["StartDate"].ToString()
+                    StartDate = DateType.FromString(rd["StartDate"].ToString())
                 };
                 rd.Close();
                 return enrollment;
             }
             return null;
         }
-        
+
         private void saveStudent(SqlConnection con, Student student, SqlTransaction transaction)
         {
             using var com = new SqlCommand()
@@ -273,7 +273,7 @@ namespace cw3.DAL
             rd.Close();
             return false;
         }
-        
+
         public bool checkIfExists(string indexNumber)
         {
             using (var con = new SqlConnection(ConStr))
@@ -295,7 +295,7 @@ namespace cw3.DAL
             }
             return false;
         }
-        
+
         private void saveEnrollment(SqlConnection con, Enrollment enrollment, SqlTransaction transaction)
         {
             using var com = new SqlCommand()
@@ -314,7 +314,7 @@ namespace cw3.DAL
         {
             var salt = GetSalt(loginCredentials.Login);
             var valueBytes = KeyDerivation.Pbkdf2(
-                                                loginCredentials.Password, 
+                                                loginCredentials.Password,
                                                 Encoding.UTF8.GetBytes(salt),
                                                 KeyDerivationPrf.HMACSHA512,
                                                 1000,

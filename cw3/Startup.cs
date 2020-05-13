@@ -35,8 +35,7 @@ namespace cw3
                         ValidateLifetime=true,
                         ValidIssuer="Gakko",
                         ValidAudience="Students",
-                        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yhf873g7nsmfgh3847gfxm3h98fh39"))
-                        //Configuration["SecretKey"]
+                        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]))
                     };
                 });
 
@@ -76,12 +75,12 @@ namespace cw3
                         return;
                     }
 
-                    if (!studentDbService.checkIfExists(context.Request.Headers["Index"].ToString()))
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        await context.Response.WriteAsync("Student not found");
-                        return;
-                    }
+                    //if (!studentDbService.checkIfExists(context.Request.Headers["Index"].ToString()))
+                    //{
+                    //    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    //    await context.Response.WriteAsync("Student not found");
+                    //    return;
+                    //}
 
                     await next();
                 });
